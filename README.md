@@ -1,3 +1,19 @@
+# xzoom with mouse follow feature
+This is a fork of the xzoom program.
+It is patched to document the -delay option and adds a
+-freeze option, as well as the ability to work with
+screens with bit depth 8, 16, 24, 32.
+
+# To build
+
+`$ xmkmf`
+`$ make`
+
+# Sources:
+xzoom from: http://webdiis.unizar.es/pub/unix/X11/xzoom-0.3.tgz
+Applied the follow patch: ftp://ftp.acc.umu.se/mirror/cdimage/snapshot/Debian/pool/main/x/xzoom/xzoom_0.3-23.diff.gz
+
+# The following is the original readme:
 This is xzoom 0.3.
 
 I got a few letters from people who tried xzoom-0.1.

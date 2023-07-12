@@ -95,6 +95,7 @@ int magy = MAGY;
 int flipxy = False;				/* flip x and y */
 int flipx = False;				/* flip display about y axis */
 int flipy = False;				/* flip display about x axiz */
+int freeze = False;				/* freeze the magnified window such that it cannot be changed with user interaction */
 
 int xzoom_flag = False;			/* next mag change only to magx */
 int yzoom_flag = False;			/* next mag change only to magy */
@@ -227,7 +228,9 @@ Usage(void) {
 		"-source geometry\n"
 		"-x\n"
 		"-y\n"
-		"-xy\n\n"
+		"-xy\n"
+    "-delay miliseconds\n"
+    "-freeze\n\n"
 		"Window commands:\n"
 		"+: Zoom in\n"
 		"-: Zoom out\n"
@@ -441,6 +444,11 @@ main(int argc, char **argv) {
 			continue;
 		}
 
+    if(!strcmp(argv[0], "-freeze")) {
+			freeze = True;
+			continue;
+		}
+
 		Usage();
 	}
 
@@ -617,15 +625,20 @@ main(int argc, char **argv) {
 				break;
 
 			case KeyRelease:
-				switch(XKeycodeToKeysym(dpy, event.xkey.keycode, 0)) {
-				case XK_Control_L:
-				case XK_Control_R:
-					scroll = 1;
-					break;
-				}
+        if (!freeze) {
+          switch(XKeycodeToKeysym(dpy, event.xkey.keycode, 0)) {
+            case XK_Control_L:
+            case XK_Control_R:
+              scroll = 1;
+              break;
+          }
+        }
 				break;
 
 			case KeyPress:
+        if (freeze) {
+          break;
+        }
 				switch(XKeycodeToKeysym(dpy, event.xkey.keycode, 0)) {
 				case XK_Control_L:
 				case XK_Control_R:
@@ -764,28 +777,32 @@ main(int argc, char **argv) {
 				break;
 
 			case ButtonPress:
+        if (!freeze) {
 #ifdef FRAME
-				xgrab = event.xbutton.x_root - width[SRC]/2;
-				ygrab = event.xbutton.y_root - height[SRC]/2;
+          xgrab = event.xbutton.x_root - width[SRC]/2;
+          ygrab = event.xbutton.y_root - height[SRC]/2;
 #else
-				xgrab = event.xbutton.x_root;
-				ygrab = event.xbutton.y_root;
+          xgrab = event.xbutton.x_root;
+          ygrab = event.xbutton.y_root;
 #endif
-				XDefineCursor(dpy, win, when_button);
-				buttonpressed = True;
+          XDefineCursor(dpy, win, when_button);
+          buttonpressed = True;
+        }
 				break;
 
 			case ButtonRelease:
-				/*
-				xgrab = event.xbutton.x_root - width[SRC]/2;
-				ygrab = event.xbutton.y_root - height[SRC]/2;
-				*/
-				XDefineCursor(dpy, win, crosshair);
-				buttonpressed = False;
+        if (!freeze) {
+          /*
+            xgrab = event.xbutton.x_root - width[SRC]/2;
+            ygrab = event.xbutton.y_root - height[SRC]/2;
+          */
+          XDefineCursor(dpy, win, crosshair);
+          buttonpressed = False;
+        }
 				break;
 
 			case MotionNotify:
-				if(buttonpressed) {
+				if(buttonpressed && !freeze) {
 #ifdef FRAME
 					xgrab = event.xmotion.x_root - width[SRC]/2;
 					ygrab = event.xmotion.y_root - height[SRC]/2;

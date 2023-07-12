@@ -6,8 +6,20 @@ screens with bit depth 8, 16, 24, 32.
 
 # To build
 
-`$ xmkmf`
-`$ make`
+Debian-based systems: Make sure to install xutils-dev
+
+```shell
+xmkmf
+make
+```
+
+# To install
+
+```shell
+xmkmf
+sudo make install
+sudo make install.man
+```
 
 # Sources:
 xzoom from: http://webdiis.unizar.es/pub/unix/X11/xzoom-0.3.tgz
